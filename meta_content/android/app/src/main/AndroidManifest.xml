@@ -24,6 +24,8 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
+               <!--  <category android:name="android.intent.category.HOME"/> 
+                <category android:name="android.intent.category.DEFAULT"/> -->
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
@@ -33,6 +35,6 @@
             android:value="2" />
     </application>
     <queries>
-     <package android:name="com.example.app_content_service" />
+     <package android:name="com.example.meta_app" />
     </queries>
 </manifest>
