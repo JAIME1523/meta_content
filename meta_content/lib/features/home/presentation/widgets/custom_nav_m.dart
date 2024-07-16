@@ -111,7 +111,7 @@ class _CustomNavMenuButtom extends StatelessWidget {
       behavior: HitTestBehavior.translucent,
       child: Container(
         padding:const EdgeInsets.symmetric(horizontal: 4),
-        width: itemSeleccionado == index ? 95 : 30,
+        width: itemSeleccionado == index ? 95 : 40,
         height: 40,
         decoration: itemSeleccionado == index
             ? const BoxDecoration(
@@ -124,7 +124,7 @@ class _CustomNavMenuButtom extends StatelessWidget {
           children: [
             const Spacer(),
             Icon(item.icon,
-                size: (itemSeleccionado == index) ? 18 : 14,
+                size: (itemSeleccionado == index) ? 20 : 28,
                 color: (itemSeleccionado == index)
                     ? Provider.of<_MenuModel>(context).activeColor
                     : Provider.of<_MenuModel>(context).inactiveColor),

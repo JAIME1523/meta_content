@@ -46,7 +46,6 @@ static Future<int> updateAmount({required String amont, required String idTransa
     log.d(resp);
     for (var transac in resp) {
       listTra.add(TransactionGRpcModel.fromMap(transac));
-      print(transac);
     }
 
     return listTra;

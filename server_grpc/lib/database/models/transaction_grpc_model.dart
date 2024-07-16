@@ -46,7 +46,7 @@ class TransactionGRpcModel extends DataDbM {
           amount              : amount ?? this.amount,
           referenceNumber     : referenceNumber ?? this.referenceNumber,
           arqc                : arqc ?? this.arqc,
-          maskPan             : maskPan ?? maskPan,
+          maskPan             : maskPan ?? this.maskPan,
           idProtoTransaction  : idProtoTransaction ?? this.idProtoTransaction,
           authorizationNumber : authorizationNumber ?? this.authorizationNumber,
           stan                : stan ?? this.stan 

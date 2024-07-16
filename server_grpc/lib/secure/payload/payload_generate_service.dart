@@ -69,6 +69,7 @@ static  Future<bool> validatePlayload({required List<int> receivedPayload,requir
     return payloadHmacSha256; 
   }
 
+  // ignore: unused_element
   static String _paddRight(String name) {
     String newData;
     var digits = name.split('');
