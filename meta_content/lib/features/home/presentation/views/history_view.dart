@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meta_content/features/home/presentation/provider/home_provider.dart';
-import 'package:meta_content/features/home/presentation/widgets/aler_info_transac.dart';
-import 'package:meta_content/features/home/presentation/widgets/buttons/primary_button.dart';
+import 'package:meta_content/features/home/presentation/widgets/widgtes.dart';
 import 'package:nav_service/nav_service.dart';
 import 'package:provider/provider.dart';
 import 'package:server_grpc/database/models/transaction_grpc_model.dart';
@@ -14,14 +13,45 @@ class HistoryView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<HomeProvider>();
-    return provider.listransac.isEmpty ? const Center(child: Text('Sin movimientos resientes'),): ListView.builder(
+    return provider.listransac.isEmpty ? const Center(child: Text('Sin movimientos resientes'),):Stack(
+      children: [
+         ListView.builder(
         itemCount: provider.listransac.length,
         itemBuilder: (_, index) {
-          final transacion = provider.listransac[index];
+          final transacion = provider.listransac.reversed.toList()[index];
           return _BanerWidget(transacion: transacion);
-        });
+        }),
+         ButtonStatus(
+          icon: Icons.health_and_safety_outlined ,
+          title: 'Estatus',
+          onPressed: (){
+             final text = TextEditingController();
+              ShowService.alert(
+                  content: AlertGet(
+                text: text,
+                onPressed: (value) async {
+                  final resp = await provider.getStatus(value);
+                  if (resp.status) {
+                    SnackService.showSnackbar(
+                        top: true,
+                        resp.statusTransac!.toString(),
+                        backgroundColor: resp.statusTransac!.value == 4
+                            ? Colors.green
+                            : resp.statusTransac!.value == 0
+                                ? Colors.blue
+                                : Colors.red);
+                    return;
+                  }
+                  SnackService.showSnackbarError(resp.info);
+                },
+              ));
+          },
+         )
+      ],
+    );
   }
 }
+
 
 class _BanerWidget extends StatelessWidget {
   const _BanerWidget({
@@ -65,7 +95,7 @@ class _BanerWidget extends StatelessWidget {
                     children: [
                    _ColumnInfo(
                         title: 'id',
-                        info: UtilsAmont.amontCustom(transacion.idProtoTransaction.toString()),
+                        info: transacion.idProtoTransaction.toString(),
                         infoStyle: styleText.titleMedium!.copyWith(fontSize: 14.5),
                       ),
                       _ColumnInfo(
@@ -87,12 +117,13 @@ class _BanerWidget extends StatelessWidget {
                     if(transacion.status!.value != 4 && transacion.status!.value != 2)    ElevatedButton(onPressed: (){
                           provider.satrtTransac(transacion.idProtoTransaction!);
                         }, child: const Text('Cobrar')),
-                      if(transacion.status!.value == 4) PrimaryButton(
+                   /*   if(transacion.status!.value == 4)
+                       PrimaryButton(
                         borderRadius: 59,
                         ischarge: true,
-                        title: 'Cancelar',onPressed:  ()async{
-                        await Future.delayed(const Duration(seconds: 2));
-                      })
+                        title: 'cancel',onPressed:  ()async{
+                   
+                      }) */
                     ],
                   ),
                 )),

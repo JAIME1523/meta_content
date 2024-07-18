@@ -60,11 +60,20 @@ class HomeProvider extends ChangeNotifier {
         type: TransactionType.Sale);
 
     final resTransac = await TransactionService.registerTran(tra);
+    if (!resTransac.status) {
+      SnackService.showSnackbarError('No se resgistro');
+      isLoading = false;
+      return resTransac;
+    }
     final id = resTransac.transcion!.idProtoTransaction!;
     listransac.add(tra.copyWith(idProtoTransaction: id));
     isLoading = false;
     clearAll();
     return resTransac;
+  }
+
+  Future<ResponseModel> getStatus(String id) async {
+    return await TransactionService.getStat(id: id, origin: 'desde la web');
   }
 
   Future satrtTransac(String id) async {
@@ -73,22 +82,32 @@ class HomeProvider extends ChangeNotifier {
         onPressed: () {
           processChange(id);
         });
-    await LaunchApp.openApp(
-      androidPackageName: 'com.example.meta_app',
-    );
+
+    await _openApp();
   }
 
- Future satrtCancelTransac(String id) async {
+  Future<void> _openApp() async {
+    try {
+      var openAppResult = await LaunchApp.openApp(
+        androidPackageName: 'com.example.meta_appsd',
+      );
+      if (openAppResult != 1) {
+        SnackService.showSnackbarError('No se puede abrir app');
+      }
+    } catch (e) {
+      SnackService.showSnackbarError('No se encontro app');
+    }
+  }
+
+  Future satrtCancelTransac(String id) async {
     await TransactionService.cancelTransaction(
         id: id,
         onPressed: () {
           cancelChange(id);
         });
-    await LaunchApp.openApp(
-      androidPackageName: 'com.example.meta_app',
-    );
+    await _openApp();
   }
-  
+
   Future processChange(String id) async {
     final res = await TransactionService.transactionResult(id: id);
     if (res.transcion != null) {
@@ -117,12 +136,13 @@ class HomeProvider extends ChangeNotifier {
       SnackService.showSnackbar('TODO OK');
       for (var i = 0; i < listransac.length; i++) {
         if (listransac[i].idProtoTransaction == id) {
-          listransac[i] = listransac[i].copyWith(status: res.statusTransac );
+          listransac[i] = listransac[i].copyWith(status: res.statusTransac);
         }
       }
-    } 
+    }
     clearAll();
   }
+
   validateInput() {
     activeButon = formKey.currentState!.validate();
     notifyListeners();
@@ -157,6 +177,7 @@ class HomeProvider extends ChangeNotifier {
   }
 
   Future<void> getData() async {
+    producList = [];
     for (var element in dataProduct) {
       final preciS = (_generedNumber().toString()).split('');
       preciS.addAll(['0', '0']);
@@ -165,6 +186,7 @@ class HomeProvider extends ChangeNotifier {
       prod.precie = preci.toString();
       producList.add(prod);
     }
+    notifyListeners();
   }
 
   int _generedNumber() {

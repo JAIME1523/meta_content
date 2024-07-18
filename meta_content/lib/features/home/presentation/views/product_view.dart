@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:meta_content/features/home/presentation/provider/home_provider.dart';
+import 'package:meta_content/features/home/presentation/widgets/widgtes.dart';
 import 'package:nav_service/nav_service.dart';
 import 'package:provider/provider.dart';
 
@@ -12,25 +13,29 @@ class ProductView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<HomeProvider>();
-    return GridView.custom(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      gridDelegate: SliverWovenGridDelegate.count(
-        crossAxisCount: 2,
-        pattern: [
-          const WovenGridTile(1),
-          const WovenGridTile(
-            5 / 7,
-            crossAxisRatio: 0.9,
-            // alignment: AlignmentDirectional.,
+    return Stack(
+      children: [
+        GridView.custom(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          gridDelegate: SliverWovenGridDelegate.count(
+            crossAxisCount: 2,
+            pattern: [
+              const WovenGridTile(1),
+              const WovenGridTile(
+                5 / 7,
+                crossAxisRatio: 0.9,
+              ),
+            ],
           ),
-        ],
-      ),
-      childrenDelegate: SliverChildBuilderDelegate((context, index) {
-        final url = provider.producList[index];
-        return _CharacterItem(
-          product: url,
-        );
-      }, childCount: provider.producList.length),
+          childrenDelegate: SliverChildBuilderDelegate((context, index) {
+            final url = provider.producList[index];
+            return _CharacterItem(
+              product: url,
+            );
+          }, childCount: provider.producList.length),
+        ),
+        ButtonStatus(heightWidth: 59, icon: Icons.replay_outlined, onPressed: ()=>provider.getData(),)
+      ],
     );
   }
 }
@@ -61,7 +66,9 @@ class _CharacterItem extends StatelessWidget {
           width: double.infinity,
           decoration: BoxDecoration(
             color: colors.secondaryContainer,
-            borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(30), bottomRight: Radius.circular(30)),
+            borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(30),
+                bottomRight: Radius.circular(30)),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -69,13 +76,17 @@ class _CharacterItem extends StatelessWidget {
               Column(
                 children: [
                   const Text('Precio:'),
-                  Text(product.precie.isNotEmpty ?  '${product.precie.replaceRange(product.precie.length -2, null, '')} \$': '')
+                  Text(product.precie.isNotEmpty
+                      ? '${product.precie.replaceRange(product.precie.length - 2, null, '')} \$'
+                      : '')
                 ],
               ),
-              IconButton(onPressed: (){
-                context.read<HomeProvider>().addPructCar(product);
-                SnackService.showSnackbar('Se agrego al carrito');
-              }, icon: const Icon(Icons.add_shopping_cart_rounded))
+              IconButton(
+                  onPressed: () {
+                    context.read<HomeProvider>().addPructCar(product);
+                    SnackService.showSnackbar('Se agrego al carrito');
+                  },
+                  icon: const Icon(Icons.add_shopping_cart_rounded))
             ],
           ),
         ),
