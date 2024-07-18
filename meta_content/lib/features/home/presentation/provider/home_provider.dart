@@ -89,7 +89,7 @@ class HomeProvider extends ChangeNotifier {
   Future<void> _openApp() async {
     try {
       var openAppResult = await LaunchApp.openApp(
-        androidPackageName: 'com.example.meta_appsd',
+        androidPackageName: 'com.example.meta_app',
       );
       if (openAppResult != 1) {
         SnackService.showSnackbarError('No se puede abrir app');

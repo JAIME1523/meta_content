@@ -14,8 +14,6 @@ class AlertInfoTransac extends StatelessWidget {
 
     final size = MediaQuery.sizeOf(context);
     return
-        /*    AlertDialog(
-            content: */
         provider.isLoading
             ? const Center(
                 child: CircularProgressIndicator(),
@@ -88,14 +86,6 @@ class AlertInfoTransac extends StatelessWidget {
                       ),
                     ),
                   );
-    /*     actions: [
-              ElevatedButton(
-                  onPressed: () {
-                    NavService.pop();
-                  },
-                  child: const Text('Ok'))
-            ],
-          ); */
   }
 }
 
