@@ -56,8 +56,8 @@ final requestInt = StartTransactionRequest(id: id,origin:origin);
     if(dataR.hasError()) return ResponseModel(status: false, info: dataR.error.errorMsg);
     return ResponseModel(status: true, info: 'ok', transcion: TransactionGRpcModel.fromMapByGrpc(dataR.transaction.writeToJsonMap()));
   }
-     static Future<ResponseModel> cancelTransaction({required String id, String origin = 'web', required Function() onPressed,}) async {
-final requestInt = CancelRequest(id: id,origin:origin);
+     static Future<ResponseModel> cancelTransaction({required String id,  required TransactionGRpcModel  transac ,String origin = 'web', required Function() onPressed,}) async {
+final requestInt = CancelRequest(id: id,origin:origin, transaction: Transaction.fromJson(transac.toJsonGrpc()));
     final resQuery = await ContentService.query(url: TypeUrl.cancelTransaction,activeStream: true, 
     selection:base64Encode(requestInt.writeToBuffer()),
     onPressed: onPressed
@@ -68,9 +68,9 @@ final requestInt = CancelRequest(id: id,origin:origin);
     return ResponseModel(status: true, info: 'ok', statusTransac: dataR.status);
   }
 
-      static Future<ResponseModel> cancelResult({required String id, String origin = 'web'}) async {
+      static Future<ResponseModel> cancelResult({required String id, required TransactionGRpcModel  transac,   String origin = 'web'}) async {
     final requestInt = CancelRequest(id: id,origin:origin);
-    final resQuery = await ContentService.query(url: TypeUrl.transactionResult,activeStream: false, 
+    final resQuery = await ContentService.query(url: TypeUrl.cancelResult,activeStream: false, 
     selection:base64Encode(requestInt.writeToBuffer()),
     );
     if(resQuery.isEmpty) return ResponseModel(status: false, info: 'No se recibio data');

@@ -5,7 +5,7 @@ enum TypeUrl {
   transactionResult('transactionResult'), getStatus('getStatus'),
   cancelTransaction('cancelTransaction'),
   registerTransaction('registerTransaction'),
-  cancelTransactionResult('cancelTransactionResult');
+  cancelResult('cancelResult');
   final  String value ;
   const TypeUrl(this.value);
   }

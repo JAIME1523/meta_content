@@ -12,10 +12,9 @@
 import 'dart:core' as $core;
 
 import 'package:protobuf/protobuf.dart' as $pb;
-
-import 'transactions.pbenum.dart';
-
+import 'package:server_grpc/grpc_data/protos/model/transactions/transactions.pbenum.dart';
 export 'transactions.pbenum.dart';
+
 
 class Transaction extends $pb.GeneratedMessage {
   factory Transaction({
@@ -27,6 +26,7 @@ class Transaction extends $pb.GeneratedMessage {
     $core.String? maskPan,
     $core.String? authorizationNumber,
     $core.String? stan,
+    $core.String? resultCode,
   }) {
     final $result = create();
     if (status != null) {
@@ -53,6 +53,9 @@ class Transaction extends $pb.GeneratedMessage {
     if (stan != null) {
       $result.stan = stan;
     }
+    if (resultCode != null) {
+      $result.resultCode = resultCode;
+    }
     return $result;
   }
   Transaction._() : super();
@@ -68,6 +71,7 @@ class Transaction extends $pb.GeneratedMessage {
     ..aOS(6, _omitFieldNames ? '' : 'maskPan', protoName: 'maskPan')
     ..aOS(7, _omitFieldNames ? '' : 'authorizationNumber', protoName: 'authorizationNumber')
     ..aOS(8, _omitFieldNames ? '' : 'stan')
+    ..aOS(9, _omitFieldNames ? '' : 'resultCode')
     ..hasRequiredFields = false
   ;
 
@@ -163,6 +167,15 @@ class Transaction extends $pb.GeneratedMessage {
   $core.bool hasStan() => $_has(7);
   @$pb.TagNumber(8)
   void clearStan() => clearField(8);
+
+  @$pb.TagNumber(9)
+  $core.String get resultCode => $_getSZ(8);
+  @$pb.TagNumber(9)
+  set resultCode($core.String v) { $_setString(8, v); }
+  @$pb.TagNumber(9)
+  $core.bool hasResultCode() => $_has(8);
+  @$pb.TagNumber(9)
+  void clearResultCode() => clearField(9);
 }
 
 

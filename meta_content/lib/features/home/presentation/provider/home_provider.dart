@@ -99,11 +99,12 @@ class HomeProvider extends ChangeNotifier {
     }
   }
 
-  Future satrtCancelTransac(String id) async {
+  Future satrtCancelTransac(TransactionGRpcModel  transac) async {
     await TransactionService.cancelTransaction(
-        id: id,
+        id: transac.idProtoTransaction!,
+        transac: transac,
         onPressed: () {
-          cancelChange(id);
+          cancelChange(transac);
         });
     await _openApp();
   }
@@ -130,12 +131,15 @@ class HomeProvider extends ChangeNotifier {
     clearAll();
   }
 
-  Future cancelChange(String id) async {
-    final res = await TransactionService.cancelResult(id: id);
+  Future cancelChange(TransactionGRpcModel  transac) async {
+    final res = await TransactionService.cancelResult(id: transac.idProtoTransaction!, transac: transac);
+    if(!res.status){
+      SnackService.showSnackbarError(res.info);
+    }
     if (res.statusTransac != null) {
       SnackService.showSnackbar('TODO OK');
       for (var i = 0; i < listransac.length; i++) {
-        if (listransac[i].idProtoTransaction == id) {
+        if (listransac[i].idProtoTransaction == transac.idProtoTransaction) {
           listransac[i] = listransac[i].copyWith(status: res.statusTransac);
         }
       }

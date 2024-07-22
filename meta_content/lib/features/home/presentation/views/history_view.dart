@@ -117,13 +117,14 @@ class _BanerWidget extends StatelessWidget {
                     if(transacion.status!.value != 4 && transacion.status!.value != 2)    ElevatedButton(onPressed: (){
                           provider.satrtTransac(transacion.idProtoTransaction!);
                         }, child: const Text('Cobrar')),
-                   /*   if(transacion.status!.value == 4)
+                     if(transacion.status!.value == 4)
                        PrimaryButton(
                         borderRadius: 59,
                         ischarge: true,
                         title: 'cancel',onPressed:  ()async{
+                          provider.satrtCancelTransac(transacion);
                    
-                      }) */
+                      }) 
                     ],
                   ),
                 )),
