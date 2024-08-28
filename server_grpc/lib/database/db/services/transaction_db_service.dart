@@ -12,7 +12,10 @@ class TransactionsDbService {
 
   static Future<String> insert(TransactionGRpcModel data) async  {
     final newId = const Uuid().v4();
-    final newData = data.copyWith(idProtoTransaction: newId);
+    final newData =  data;
+    if(data.idProtoTransaction != null){
+    data.copyWith(idProtoTransaction: newId);
+    }
     return  (await _impl.insert(_table, newData) != 0) ? 
       newData.idProtoTransaction! :
       '0';
@@ -40,8 +43,8 @@ static Future<int> updateAmount({required String amont, required String idTransa
     Map<String, dynamic> data = {'amont': amont,};
    return await _impl.updateStatus(_table, data: data, idTransaction: idTransaction);
   }
-  static Future getAll() async {
-    List listTra = [];
+  static Future<List<TransactionGRpcModel>> getAll() async {
+    List<TransactionGRpcModel> listTra = [];
     final resp = await _impl.getAll(_table);
     log.d(resp);
     for (var transac in resp) {

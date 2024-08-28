@@ -15,7 +15,7 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_)=> HomeProvider()..getData(),
+      create: (_)=> HomeProvider()..getDbInfo(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         scaffoldMessengerKey: SnackService.messagerKey,

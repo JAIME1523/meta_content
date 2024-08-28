@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:external_app_launcher/external_app_launcher.dart';
+import 'package:app_launcher/app_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:meta_content/core/json/data_p.dart';
 import 'package:meta_content/core/json/model_data/produc_model.dart';
@@ -9,18 +9,28 @@ import 'package:meta_content/core/server/service/transaction_service.dart';
 import 'package:nav_service/nav_service.dart';
 import 'package:server_grpc/server_grpc.dart';
 
-enum ViewsStatus { product, history, carShop }
+enum ViewsStatus { /* product,*/ history, carShop }
 
 class HomeProvider extends ChangeNotifier {
   final formKey = GlobalKey<FormState>();
   bool _activeButon = true;
   bool _isLoading = false;
-  ViewsStatus _viewStatus = ViewsStatus.product;
+  bool _isLoadingHome = false;
+
+  ViewsStatus _viewStatus = ViewsStatus.carShop;
   List<ProductModel> producList = [];
   List<ProductModel> producListCar = [];
   List<TransactionGRpcModel> listransac = [];
   String monto = '';
   TransactionGRpcModel? transactionGet;
+
+  Future getDbInfo() async {
+    isLoadingHome = true;
+    final ist = await TransactionService.getAllTransaction();
+    isLoadingHome = false;
+
+    listransac = ist;
+  }
 
   addPructCar(ProductModel produc) {
     producListCar.add(produc);
@@ -38,18 +48,48 @@ class HomeProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<TransactionGRpcModel> getTransac(String id) async {
+  Future<TransactionGRpcModel?> getTransac(String id) async {
     isLoading = true;
     final resTransac = await TransactionService.getTran(id: id);
     isLoading = false;
     transactionGet = resTransac.transcion;
-    return resTransac.transcion!;
+    return resTransac.transcion;
   }
 
   Future inserStartTransac() async {
     final resTransac = await registrerTransa();
     if (!resTransac.status) return;
     await satrtTransac(resTransac.transcion!.idProtoTransaction!);
+  }
+
+  Future insetAll() async {
+    isLoading = true;
+  for (var i = 1; i < 5; i++) {
+      final tra = TransactionGRpcModel(
+          amount: i,
+          status: TransactionStatus.Pending,
+          type: TransactionType.Sale);
+      final resTransac = await TransactionService.registerTran(tra);
+      if(!resTransac.status) return;
+      final id = resTransac.transcion!.idProtoTransaction!;
+      listransac.add(tra.copyWith(idProtoTransaction: id));
+  }
+
+       SnackService.showSnackbar("Se insertaron varias transacciones"); 
+/*     for (var element in producListCar) {
+      final tra = TransactionGRpcModel(
+          amount: int.tryParse(element.precie) ?? 0,
+          status: TransactionStatus.Pending,
+          type: TransactionType.Sale);
+      final resTransac = await TransactionService.registerTran(tra);
+
+      final id = resTransac.transcion!.idProtoTransaction!;
+      listransac.add(tra.copyWith(idProtoTransaction: id));
+      await DBTransac.save(tra.copyWith(idProtoTransaction: id));
+    } */
+
+    isLoading = false;
+    clearAll();
   }
 
   Future<ResponseModel> registrerTransa() async {
@@ -67,6 +107,7 @@ class HomeProvider extends ChangeNotifier {
     }
     final id = resTransac.transcion!.idProtoTransaction!;
     listransac.add(tra.copyWith(idProtoTransaction: id));
+   // await DBTransac.save(tra.copyWith(idProtoTransaction: id));
     isLoading = false;
     clearAll();
     return resTransac;
@@ -77,35 +118,40 @@ class HomeProvider extends ChangeNotifier {
   }
 
   Future satrtTransac(String id) async {
-    await TransactionService.startTransaction(
+    final result = await TransactionService.startTransaction(
         id: id,
         onPressed: () {
           processChange(id);
         });
-
+    if (!result.status) {
+      SnackService.showSnackbarError(result.info);
+      return;
+    }
     await _openApp();
   }
 
   Future<void> _openApp() async {
     try {
-      var openAppResult = await LaunchApp.openApp(
-        androidPackageName: 'com.example.meta_app',
+      await AppLauncher.openApp(
+        androidApplicationId: 'com.example.meta_app',
       );
-      if (openAppResult != 1) {
-        SnackService.showSnackbarError('No se puede abrir app');
-      }
+     
     } catch (e) {
       SnackService.showSnackbarError('No se encontro app');
     }
   }
 
-  Future satrtCancelTransac(TransactionGRpcModel  transac) async {
-    await TransactionService.cancelTransaction(
+  Future satrtCancelTransac(TransactionGRpcModel transac) async {
+  final result =  await TransactionService.cancelTransaction(
         id: transac.idProtoTransaction!,
         transac: transac,
         onPressed: () {
           cancelChange(transac);
         });
+           if (!result.status) {
+      SnackService.showSnackbarError(result.info);
+      return;
+    }
     await _openApp();
   }
 
@@ -117,6 +163,8 @@ class HomeProvider extends ChangeNotifier {
       for (var i = 0; i < listransac.length; i++) {
         if (listransac[i].idProtoTransaction == id) {
           listransac[i] = res.transcion!.copyWith(idProtoTransaction: id);
+        /*   await DBTransac.udpade(
+              res.transcion!.copyWith(idProtoTransaction: id)); */
         }
       }
     } else {
@@ -125,15 +173,18 @@ class HomeProvider extends ChangeNotifier {
       for (var i = 0; i < listransac.length; i++) {
         if (listransac[i].idProtoTransaction == id) {
           listransac[i] = reserror.transcion!.copyWith(idProtoTransaction: id);
+        /*   await DBTransac.udpade(
+              reserror.transcion!.copyWith(idProtoTransaction: id)); */
         }
       }
     }
     clearAll();
   }
 
-  Future cancelChange(TransactionGRpcModel  transac) async {
-    final res = await TransactionService.cancelResult(id: transac.idProtoTransaction!, transac: transac);
-    if(!res.status){
+  Future cancelChange(TransactionGRpcModel transac) async {
+    final res = await TransactionService.cancelResult(
+        id: transac.idProtoTransaction!, transac: transac);
+    if (!res.status) {
       SnackService.showSnackbarError(res.info);
     }
     if (res.statusTransac != null) {
@@ -141,6 +192,8 @@ class HomeProvider extends ChangeNotifier {
       for (var i = 0; i < listransac.length; i++) {
         if (listransac[i].idProtoTransaction == transac.idProtoTransaction) {
           listransac[i] = listransac[i].copyWith(status: res.statusTransac);
+         /*  await DBTransac.udpade(
+              listransac[i].copyWith(status: res.statusTransac)); */
         }
       }
     }
@@ -226,6 +279,12 @@ class HomeProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   set isLoading(bool value) {
     _isLoading = value;
+    notifyListeners();
+  }
+
+  bool get isLoadingHome => _isLoadingHome;
+  set isLoadingHome(bool value) {
+    _isLoadingHome = value;
     notifyListeners();
   }
 }

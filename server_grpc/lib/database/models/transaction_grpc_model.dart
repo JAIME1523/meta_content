@@ -64,7 +64,7 @@ class TransactionGRpcModel extends DataDbM {
         // transactionId: json["transactionId"],
         status              : statusValues.map[json["status"]]!,
         type                : typeValues.map[json["type"]],
-        amount              : int.tryParse(json["amount"]) ?? 0,
+        amount              : int.tryParse(json["amount"].toString()) ?? 0,
         referenceNumber     : json["referenceNumber"],
         arqc                : json["arqc"],
         maskPan             : json["maskPan"],

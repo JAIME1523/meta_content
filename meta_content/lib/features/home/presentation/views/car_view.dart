@@ -17,6 +17,25 @@ class CarView extends StatelessWidget {
         actions: provider.isLoading ? []: [
           IconButton(
               onPressed: () {
+            provider.insetAll();
+     /*  final snac =      SnackBar(
+      behavior: SnackBarBehavior.floating,
+      clipBehavior: Clip.hardEdge,
+     shape:ShapeBorder.lerp(null, null, 40) ,
+      backgroundColor: Colors.red.withOpacity(0.9),
+      content: Text(
+        "message",
+        style:
+            const TextStyle(
+              color: Colors.white,
+            ),
+      ),
+    );
+   SnackService.messagerKey.currentState!.showSnackBar(snac, ); */
+              },
+              icon: const Icon(Icons.insert_chart_outlined_outlined)),
+          IconButton(
+              onPressed: () {
             provider.clearAll();
               },
               icon: const Icon(Icons.delete_forever_outlined)),
@@ -189,7 +208,7 @@ class _Icon extends StatelessWidget {
             ),
             if (provider.monto.isNotEmpty)
               Text(
-                '\$ ${provider.monto.replaceRange(provider.monto.length - 2, null, '')}',
+                UtilsAmont.amontCustom(provider.monto.toString()),
                 style:
                     styleText.bodyLarge!.copyWith(fontWeight: FontWeight.bold),
               ),

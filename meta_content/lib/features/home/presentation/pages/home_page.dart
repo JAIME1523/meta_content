@@ -15,7 +15,10 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: Center(
-          child: viewSwitch(provider.viewStatus),
+          child:
+          
+          provider.isLoadingHome ? const CircularProgressIndicator() :
+           viewSwitch(provider.viewStatus),
         ),
       ),
       bottomNavigationBar: const _Nav(),
@@ -24,8 +27,8 @@ class HomePage extends StatelessWidget {
 
   viewSwitch(ViewsStatus view) {
     switch (view) {
-      case ViewsStatus.product:
-        return const ProductView();
+     /*  case ViewsStatus.product:
+        return const ProductView(); */
 
       case ViewsStatus.history:
         return const HistoryView();
@@ -48,11 +51,17 @@ class _Nav extends StatelessWidget {
     final navProvider = context.watch<HomeProvider>();
     final colors = Theme.of(context).colorScheme;
     return CustomNavMenu(activeColor: colors.secondaryContainer, items: [
-      CustomNavButto(
+     /*  CustomNavButto(
           icon: Icons.home,
           tilte: 'Product',
           onPressed: () {
             navProvider.viewStatus = ViewsStatus.product;
+          }), */
+           CustomNavButto(
+          icon: Icons.shopping_cart,
+          tilte: 'shopping',
+          onPressed: () {
+            navProvider.viewStatus = ViewsStatus.carShop;
           }),
       CustomNavButto(
           icon: Icons.history_sharp,
@@ -60,12 +69,7 @@ class _Nav extends StatelessWidget {
           onPressed: () {
             navProvider.viewStatus = ViewsStatus.history;
           }),
-      CustomNavButto(
-          icon: Icons.shopping_cart,
-          tilte: 'shopping',
-          onPressed: () {
-            navProvider.viewStatus = ViewsStatus.carShop;
-          }),
+     
     ]);
   }
 }

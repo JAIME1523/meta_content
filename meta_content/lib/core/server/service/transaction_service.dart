@@ -75,7 +75,20 @@ final requestInt = CancelRequest(id: id,origin:origin, transaction: Transaction.
     );
     if(resQuery.isEmpty) return ResponseModel(status: false, info: 'No se recibio data');
     final dataR = CancelNotification.fromBuffer( base64Decode(resQuery));
-    if(dataR.hasError()) return ResponseModel(status: false, info: dataR.error.errorMsg);
-       return ResponseModel(status: true, info: 'ok', statusTransac: dataR.status);
+    if(dataR.hasError()) {
+      if(dataR.error.code == MetaErrorCode.TransactionCompleted ) return ResponseModel(status: true,info: "ok", statusTransac: TransactionStatus.Cancelled);
+    return ResponseModel(status: false, info: dataR.error.errorMsg);}
+    return ResponseModel(status: true, info: 'ok', statusTransac: dataR.status);
+  }
+
+  static Future<List<TransactionGRpcModel>> getAllTransaction()async{
+    List<TransactionGRpcModel> listTra = [];
+    final resQuery = await ContentService.query(url: TypeUrl.getAll,activeStream: false,selection: "" );
+    if (resQuery.isEmpty) return listTra;
+   final listString =  resQuery.replaceAll("[","").replaceAll("]", "").split(",");
+    for (var transac in listString) {
+      listTra.add( TransactionGRpcModel.fromJson(utf8.decode(base64Decode(transac.trimLeft().trimRight()))));
+    }    
+    return listTra;
   }
 }
