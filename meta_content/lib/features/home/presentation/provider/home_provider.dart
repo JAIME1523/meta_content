@@ -150,6 +150,7 @@ class HomeProvider extends ChangeNotifier {
         });
            if (!result.status) {
       SnackService.showSnackbarError(result.info);
+      
       return;
     }
     await _openApp();
